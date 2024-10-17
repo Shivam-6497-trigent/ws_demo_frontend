@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
+import './App.css';  // Import CSS styles
 
 const socket = io('https://ws-demo-backend.onrender.com');
 
@@ -9,30 +10,37 @@ const App = () => {
 
   useEffect(() => {
     socket.on('message', (data) => {
-      setMessages([...messages, data]);
+      setMessages((prevMessages) => [...prevMessages, data]);
     });
-  }, [messages]);
+  }, []);
 
   const sendMessage = () => {
-    socket.emit('message', message);
-    setMessage('');
+    if (message.trim()) {
+      socket.emit('message', message);
+      setMessage('');  // Clear input after sending
+    }
   };
 
   return (
-    <div>
-      <h1>WebSocket Chat</h1>
-      <input 
-        type="text" 
-        value={message} 
-        onChange={(e) => setMessage(e.target.value)} 
-        placeholder="Type a message" 
-      />
-      <button onClick={sendMessage}>Send</button>
-      <ul>
-        {messages.map((msg, idx) => (
-          <li key={idx}>{msg}</li>
-        ))}
-      </ul>
+    <div className="chat-container">
+      <h1 className="chat-title">WebSocket Chat</h1>
+      <div className="chat-box">
+        <ul className="messages-list">
+          {messages.map((msg, idx) => (
+            <li key={idx} className="message-item">{msg}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="input-container">
+        <input 
+          type="text" 
+          className="chat-input" 
+          value={message} 
+          onChange={(e) => setMessage(e.target.value)} 
+          placeholder="Type a message"
+        />
+        <button className="send-button" onClick={sendMessage}>Send</button>
+      </div>
     </div>
   );
 };
